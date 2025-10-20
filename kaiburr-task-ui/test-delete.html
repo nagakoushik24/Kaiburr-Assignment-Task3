@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Task Test</title>
+</head>
+<body>
+    <h1>Delete Task Test</h1>
+    <button onclick="testDelete()">Test Delete Task</button>
+    <div id="result"></div>
+
+    <script>
+        async function testDelete() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing delete...';
+            
+            try {
+                // First, create a test task
+                const createResponse = await fetch('http://localhost:8080/tasks', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: 'test-delete-123',
+                        name: 'Test Delete Task',
+                        owner: 'Test User',
+                        command: 'echo test'
+                    })
+                });
+                
+                if (createResponse.ok) {
+                    resultDiv.innerHTML += '<p style="color: green;">✅ Task created successfully</p>';
+                    
+                    // Now try to delete it
+                    const deleteResponse = await fetch('http://localhost:8080/tasks?id=test-delete-123', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (deleteResponse.ok) {
+                        resultDiv.innerHTML += '<p style="color: green;">✅ Task deleted successfully (Status: ' + deleteResponse.status + ')</p>';
+                    } else {
+                        resultDiv.innerHTML += '<p style="color: red;">❌ Delete failed (Status: ' + deleteResponse.status + ')</p>';
+                    }
+                } else {
+                    resultDiv.innerHTML += '<p style="color: red;">❌ Create failed (Status: ' + createResponse.status + ')</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML += '<p style="color: red;">❌ Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Execution Test</title>
+</head>
+<body>
+    <h1>Task Execution Test</h1>
+    <button onclick="testExecution()">Test Task Execution</button>
+    <div id="result"></div>
+
+    <script>
+        async function testExecution() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing task execution...';
+            
+            try {
+                // First, create a test task
+                const createResponse = await fetch('http://localhost:8080/tasks', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: 'test-exec-' + Date.now(),
+                        name: 'Test Execution Task',
+                        owner: 'Test User',
+                        command: 'echo "Hello World from test execution!"'
+                    })
+                });
+                
+                if (createResponse.ok) {
+                    const task = await createResponse.json();
+                    resultDiv.innerHTML += '<p style="color: green;">✅ Task created successfully</p>';
+                    resultDiv.innerHTML += '<p>Task ID: ' + task.id + '</p>';
+                    
+                    // Now execute the task
+                    resultDiv.innerHTML += '<p>Executing task...</p>';
+                    const executeResponse = await fetch('http://localhost:8080/tasks/execute?taskId=' + task.id, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (executeResponse.ok) {
+                        const executedTask = await executeResponse.json();
+                        resultDiv.innerHTML += '<p style="color: green;">✅ Task executed successfully</p>';
+                        
+                        // Show execution details
+                        if (executedTask.taskExecutions && executedTask.taskExecutions.length > 0) {
+                            const execution = executedTask.taskExecutions[executedTask.taskExecutions.length - 1];
+                            resultDiv.innerHTML += '<h3>Execution Details:</h3>';
+                            resultDiv.innerHTML += '<p><strong>Start Time:</strong> ' + execution.startTime + '</p>';
+                            resultDiv.innerHTML += '<p><strong>End Time:</strong> ' + execution.endTime + '</p>';
+                            
+                            if (execution.startTime && execution.endTime) {
+                                const start = new Date(execution.startTime);
+                                const end = new Date(execution.endTime);
+                                const duration = (end.getTime() - start.getTime()) / 1000;
+                                resultDiv.innerHTML += '<p><strong>Duration:</strong> ' + duration.toFixed(2) + ' seconds</p>';
+                            }
+                            
+                            resultDiv.innerHTML += '<p><strong>Output:</strong></p>';
+                            resultDiv.innerHTML += '<pre style="background: #f5f5f5; padding: 10px; border-radius: 4px;">' + execution.output + '</pre>';
+                        }
+                    } else {
+                        resultDiv.innerHTML += '<p style="color: red;">❌ Execution failed (Status: ' + executeResponse.status + ')</p>';
+                    }
+                } else {
+                    resultDiv.innerHTML += '<p style="color: red;">❌ Create failed (Status: ' + createResponse.status + ')</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML += '<p style="color: red;">❌ Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

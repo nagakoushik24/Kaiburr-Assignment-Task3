@@ -1,0 +1,57 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+*.swp
+
+# Logs
+*.log
+hs_err_pid*.log
+replay_pid*.log
+
+# Java / Spring / Maven / Gradle
+.target/
+target/
+.out/
+out/
+bin/
+.build/
+build/
+.gradle/
+
+# Wrapper caches (keep gradlew and wrapper files tracked)
+!gradlew
+!gradlew.bat
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Frontend (Vite/React)
+**/node_modules/
+**/dist/
+**/.vite/
+**/.cache/
+
+# Env files
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Coverage / test artifacts
+coverage/
+**/coverage/
+
+# Docker
+*.pid
+
+# Local build outputs
+*.jar
+*.war
+*.ear
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
